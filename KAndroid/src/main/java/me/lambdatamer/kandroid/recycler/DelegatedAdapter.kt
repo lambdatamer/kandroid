@@ -12,7 +12,7 @@ import java.lang.ref.WeakReference
 @Suppress("unused", "UNCHECKED_CAST")
 abstract class DelegatedAdapter<T>(
     delegates: Set<AdapterDelegate<*, *>>
-) : RecyclerView.Adapter<AdapterDelegate.ViewHolder<T, *>>() {
+) : RecyclerView.Adapter<AdapterDelegate<T, *>.ViewHolder>() {
 
     private val delegates = delegates.map { it as AdapterDelegate<T, *> }.toSet()
 
@@ -46,17 +46,16 @@ abstract class DelegatedAdapter<T>(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): AdapterDelegate.ViewHolder<T, *> {
+    ): AdapterDelegate<T, *>.ViewHolder {
         val delegate = requireNotNull(delegates.find { it.viewType == viewType })
-        return delegate.createViewHolder(parent) as AdapterDelegate.ViewHolder<T, *>
+        return delegate.createViewHolder(parent)
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun onBindViewHolder(holder: AdapterDelegate.ViewHolder<T, *>, position: Int) {
+    override fun onBindViewHolder(holder: AdapterDelegate<T, *>.ViewHolder, position: Int) {
         val item = data[position]!!
         val delegate = requireNotNull(delegates.find { it.isFor(item) })
-                as AdapterDelegate<T, AdapterDelegate.ViewHolder<T, *>>
-        delegate.bind(holder, item)
+        holder.bind(item)
         if (delegate.isClickable) holder.itemView.onRippleClick {
             onItemClick(item, holder.binding, delegate)
         }
@@ -75,6 +74,4 @@ abstract class DelegatedAdapter<T>(
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         recyclerReference = WeakReference<RecyclerView>(null)
     }
-
 }
-

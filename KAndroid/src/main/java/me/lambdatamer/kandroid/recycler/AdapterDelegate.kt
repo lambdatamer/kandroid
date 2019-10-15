@@ -1,46 +1,35 @@
 package me.lambdatamer.kandroid.recycler
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.ColorRes
-import androidx.annotation.IdRes
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.ViewDataBinding
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder as RecyclerViewHolder
 
-@Suppress("unused")
-abstract class AdapterDelegate<in TItem, TViewHolder : AdapterDelegate.ViewHolder<TItem, *>>(
-    private val itemClass: Class<TItem>
+abstract class AdapterDelegate<in T, B : ViewDataBinding>(
+    private val itemClass: Class<T>,
+    private val bindingInflater: (LayoutInflater, ViewGroup, Boolean) -> B
 ) {
-
     internal val viewType = ViewCompat.generateViewId()
 
     open val isClickable: Boolean = false
 
-    abstract fun createViewHolder(parent: ViewGroup): TViewHolder
+    open fun areItemsTheSame(oldItem: T, newItem: T) = true
 
-    open fun areItemsTheSame(oldItem: TItem, newItem: TItem) = true
+    open fun areContentsTheSame(oldItem: T, newItem: T) = oldItem == newItem
 
-    open fun areContentsTheSame(oldItem: TItem, newItem: TItem) = oldItem == newItem
+    abstract fun bind(viewHolder: ViewHolder, item: T)
 
-    internal fun bind(viewHolder: TViewHolder, item: TItem) = viewHolder.bind(item)
+    internal fun createViewHolder(parent: ViewGroup) = ViewHolder(parent)
 
     internal fun isFor(item: Any) = item::class.java == itemClass
 
-    abstract class ViewHolder<in T, out B : ViewDataBinding>(
+    inner class ViewHolder internal constructor(
         parent: ViewGroup,
-        inflater: (LayoutInflater, ViewGroup, Boolean) -> B,
-        val binding: B = inflater(LayoutInflater.from(parent.context), parent, false)
-    ) : RecyclerView.ViewHolder(binding.root) {
-
+        val binding: B = bindingInflater(LayoutInflater.from(parent.context), parent, false)
+    ) : RecyclerViewHolder(binding.root) {
         val context = checkNotNull(itemView.context)
 
-        abstract fun bind(item: T)
-
-        protected fun <T : View> findViewById(@IdRes id: Int) = itemView.findViewById<T>(id)!!
-
-        protected fun getColor(@ColorRes id: Int) = ContextCompat.getColor(itemView.context, id)
+        fun bind(item: T) = bind(this, item)
     }
 }
