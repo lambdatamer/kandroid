@@ -7,6 +7,14 @@ private const val RIPPLE_CLICK_DELAY = 150L
 
 fun View.onClick(listener: (View) -> Unit) = setOnClickListener(listener)
 
-fun View.onRippleClick(delay: Long = RIPPLE_CLICK_DELAY, listener: (View) -> Unit) = onClick {
-    handler.postDelayed(delay) { listener(this) }
+fun View.onRippleClick(
+    delay: Long = RIPPLE_CLICK_DELAY,
+    disableOnClick: Boolean = true,
+    listener: (View) -> Unit
+) = onClick {
+    if (disableOnClick) isEnabled = false
+    handler.postDelayed(delay) {
+        isEnabled = true
+        listener(this)
+    }
 }

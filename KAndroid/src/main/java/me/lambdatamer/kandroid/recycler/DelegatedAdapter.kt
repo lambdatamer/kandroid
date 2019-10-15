@@ -1,16 +1,20 @@
 package me.lambdatamer.kandroid.recycler
 
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.databinding.ViewDataBinding
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import me.lambdatamer.kandroid.extensions.className
 import me.lambdatamer.kandroid.extensions.onRippleClick
 import java.lang.ref.WeakReference
 
-@Suppress("unused")
-abstract class DelegatedAdapter<T> : RecyclerView.Adapter<AdapterDelegate.ViewHolder<T, *>>() {
+@Suppress("unused", "UNCHECKED_CAST")
+abstract class DelegatedAdapter<T>(
+    delegates: Set<AdapterDelegate<*, *>>
+) : RecyclerView.Adapter<AdapterDelegate.ViewHolder<T, *>>() {
 
-    protected abstract val delegates: Set<AdapterDelegate<out T, *>>
+    private val delegates = delegates.map { it as AdapterDelegate<T, *> }.toSet()
 
     private var data: List<T> = emptyList()
 
@@ -19,19 +23,21 @@ abstract class DelegatedAdapter<T> : RecyclerView.Adapter<AdapterDelegate.ViewHo
 
     override fun getItemCount() = data.size
 
-    open fun onDataSetChanged(data: List<T>) {}
+    open fun onDataChanged(data: List<T>) {}
 
     open fun onItemClick(item: T, binding: ViewDataBinding, delegate: AdapterDelegate<T, *>) {}
 
     fun setData(newData: List<T>) {
+        DiffUtil.calculateDiff(DiffUtilCallback(delegates, data, newData))
+            .dispatchUpdatesTo(this)
         data = newData
-        notifyDataSetChanged()
-        onDataSetChanged(newData)
+
+        onDataChanged(newData)
     }
 
     override fun getItemViewType(position: Int): Int {
-        val item = data[position]!!
-        val delegate = delegates.find { it.isFor(item) }
+        val item = data[position]
+        val delegate = delegates.find { it.isFor(item as Any) }
         requireNotNull(delegate) { "AdapterDelegate is not registered for class ${item.className}" }
         return delegate.viewType
     }
@@ -56,10 +62,16 @@ abstract class DelegatedAdapter<T> : RecyclerView.Adapter<AdapterDelegate.ViewHo
         }
     }
 
+    open fun getItemId(item: T): Long = -1
+
+    final override fun getItemId(position: Int) = getItemId(data[position])
+
+    @CallSuper
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         recyclerReference = WeakReference(recyclerView)
     }
 
+    @CallSuper
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         recyclerReference = WeakReference<RecyclerView>(null)
     }

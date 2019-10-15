@@ -32,11 +32,11 @@ class SingleLiveEvent<T> : MutableLiveData<T>() {
     }
 
     @MainThread
-    fun call() {
+    fun callNow() {
         value = null
     }
 
-    fun post() {
+    fun call() {
         postValue(null)
     }
 }

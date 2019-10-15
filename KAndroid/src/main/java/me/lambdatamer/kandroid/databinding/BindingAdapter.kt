@@ -13,6 +13,6 @@ fun bindingOnRippleClick(view: View, listener: () -> Unit) {
 }
 
 @BindingAdapter("android:visibility", "defaultVisibility", requireAll = false)
-fun setVisibilty(view: View, isVisible: Boolean?, defaultVisibility: Boolean?) {
+fun setVisibility(view: View, isVisible: Boolean?, defaultVisibility: Boolean?) {
     view.isVisible = isVisible ?: defaultVisibility ?: true
 }

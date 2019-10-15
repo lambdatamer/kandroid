@@ -2,9 +2,11 @@
 
 package me.lambdatamer.kandroid.extensions
 
+import android.animation.AnimatorInflater
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import androidx.annotation.AnimatorRes
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 
@@ -19,3 +21,6 @@ fun Context.getColorCompat(@ColorRes colorRes: Int) =
 
 fun Number.dpToInt(context: Context) =
     (toFloat() * context.resources.displayMetrics.density).toInt()
+
+fun Context.loadStateListAnimator(@AnimatorRes animatorRes: Int) =
+    AnimatorInflater.loadStateListAnimator(this, animatorRes)

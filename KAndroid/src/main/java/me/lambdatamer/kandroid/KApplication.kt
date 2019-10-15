@@ -12,6 +12,7 @@ abstract class KApplication : Application(), KodeinAware {
     override val kodein = Kodein.lazy {
         import(androidXModule(this@KApplication))
         import(kAndroidModule)
+
         import(rootModule)
     }
 }

@@ -11,7 +11,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 
 @Suppress("unused")
-abstract class AdapterDelegate<TItem, TViewHolder : AdapterDelegate.ViewHolder<TItem, *>>(
+abstract class AdapterDelegate<in TItem, TViewHolder : AdapterDelegate.ViewHolder<TItem, *>>(
     private val itemClass: Class<TItem>
 ) {
 
@@ -21,11 +21,15 @@ abstract class AdapterDelegate<TItem, TViewHolder : AdapterDelegate.ViewHolder<T
 
     abstract fun createViewHolder(parent: ViewGroup): TViewHolder
 
+    open fun areItemsTheSame(oldItem: TItem, newItem: TItem) = true
+
+    open fun areContentsTheSame(oldItem: TItem, newItem: TItem) = oldItem == newItem
+
     internal fun bind(viewHolder: TViewHolder, item: TItem) = viewHolder.bind(item)
 
     internal fun isFor(item: Any) = item::class.java == itemClass
 
-    abstract class ViewHolder<T, B : ViewDataBinding>(
+    abstract class ViewHolder<in T, out B : ViewDataBinding>(
         parent: ViewGroup,
         inflater: (LayoutInflater, ViewGroup, Boolean) -> B,
         val binding: B = inflater(LayoutInflater.from(parent.context), parent, false)
@@ -38,6 +42,5 @@ abstract class AdapterDelegate<TItem, TViewHolder : AdapterDelegate.ViewHolder<T
         protected fun <T : View> findViewById(@IdRes id: Int) = itemView.findViewById<T>(id)!!
 
         protected fun getColor(@ColorRes id: Int) = ContextCompat.getColor(itemView.context, id)
-
     }
 }

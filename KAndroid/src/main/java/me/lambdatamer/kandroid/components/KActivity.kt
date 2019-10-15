@@ -1,8 +1,11 @@
-package me.lambdatamer.kandroid.activity
+package me.lambdatamer.kandroid.components
 
 import android.os.Bundle
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import me.lambdatamer.kandroid.viewmodel.KViewModelOwner
@@ -30,4 +33,20 @@ abstract class KActivity : AppCompatActivity(), CoroutineScope by MainScope(), K
         * */
         kodeinTrigger.trigger()
     }
+
+    fun <T> LiveData<T>.observe(
+        lifecycleOwner: LifecycleOwner,
+        observer: (item: T?) -> Unit
+    ) = observe(lifecycleOwner, Observer(observer))
+
+    fun <T> LiveData<T>.observeNonNull(
+        lifecycleOwner: LifecycleOwner,
+        observer: (item: T) -> Unit
+    ) = observe(lifecycleOwner, Observer { it?.let(observer) })
+
+    fun <T> LiveData<T>.observe(observer: (item: T?) -> Unit) =
+        observe(this@KActivity, Observer(observer))
+
+    fun <T> LiveData<T>.observeNonNull(observer: (item: T) -> Unit) =
+        observeNonNull(this@KActivity, observer)
 }

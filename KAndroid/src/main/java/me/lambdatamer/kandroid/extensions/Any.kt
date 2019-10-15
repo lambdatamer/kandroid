@@ -7,5 +7,4 @@ val Any?.className get() = if (this != null) this::class.java.simpleName else "[
 fun Any.createLogger(
     debug: Boolean = false,
     messageFormatter: (Any?) -> String = KLogger.DEFAULT_FORMAT
-) =
-    KLogger(className, debug, messageFormatter)
+) = KLogger(className, debug, messageFormatter)

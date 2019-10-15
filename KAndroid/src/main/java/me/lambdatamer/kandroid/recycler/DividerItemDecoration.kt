@@ -7,7 +7,9 @@ import android.graphics.Rect
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.recyclerview.widget.RecyclerView
+import me.lambdatamer.kandroid.R
 import me.lambdatamer.kandroid.extensions.dpToInt
+import me.lambdatamer.kandroid.extensions.getColorCompat
 import kotlin.math.roundToInt
 
 @Suppress("unused")
@@ -16,7 +18,7 @@ class DividerItemDecoration(
     private val paddingLeft: Int = DEFAULT_PADDING_DP.dpToInt(context),
     private val paddingRight: Int = DEFAULT_PADDING_DP.dpToInt(context),
     private val thickness: Int = DEFAULT_THICKNESS_DP.dpToInt(context),
-    @ColorInt color: Int = 0
+    @ColorInt color: Int = context.getColorCompat(R.color.black_10)
 ) : RecyclerView.ItemDecoration() {
 
     companion object {

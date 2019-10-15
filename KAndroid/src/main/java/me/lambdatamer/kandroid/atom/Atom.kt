@@ -5,4 +5,3 @@ sealed class Atom<T> {
     data class Success<T>(val content: T) : Atom<T>()
     data class Error<T>(val throwable: Throwable) : Atom<T>()
 }
-

@@ -3,8 +3,8 @@
 package me.lambdatamer.kandroid.viewmodel
 
 import androidx.lifecycle.ViewModelProviders
-import me.lambdatamer.kandroid.activity.KActivity
-import me.lambdatamer.kandroid.fragment.KFragment
+import me.lambdatamer.kandroid.components.KActivity
+import me.lambdatamer.kandroid.components.KFragment
 import me.lambdatamer.kandroid.extensions.className
 import org.kodein.di.Kodein
 import org.kodein.di.generic.contexted
